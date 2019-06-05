@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import MessageList from "./MessageList.jsx";
 import { ChatBar } from "./ChatBar.jsx";
+import uuidv1 from "uuid/v1";
 
 class App extends Component {
   // Set initial state so the component is initially "loading"
@@ -8,38 +9,54 @@ class App extends Component {
     super(props);
     // this is the *only* time you should assign directly to state:
 
+    this.socket = new WebSocket("ws://localhost:3001");
+
     // add 'message' and 'current user' to state -- how?
     this.state = {
       currentUser: { name: "Bob" }, // optional. if currentUser is not defined, it means the user is Anonymous
-      messages: [
-        {
-          id: "1j3l12k",
-          username: "Bob",
-          content: "Has anyone seen my marbles?"
-        },
-        {
-          id: "934kfa9",
-          username: "Anonymous",
-          content:
-            "No, I think you lost them. You lost your marbles Bob. You lost them for good."
-        }
-      ]
+      messages: []
     };
   }
 
   addMessage = newMessage => {
     const messageObject = {
-      id: this.state.messages.length + 1,
+      // id: uuidv1(),
       username: this.state.currentUser.name,
-      content: newMessage
+      content: newMessage,
+      type: "outgoingMessage"
     };
 
-    const oldMessages = this.state.messages;
-    const newMessages = [...oldMessages, messageObject];
-    this.setState({ messages: newMessages });
+    this.socket.send(JSON.stringify(messageObject));
+    // const oldMessages = this.state.messages;
+    // const newMessages = [...oldMessages, messageObject];
+    // this.setState({ messages: newMessages });
+  };
+
+  // changeUser = newUser => {
+  //   this.setState({ currentUser: { name: newUser } });
+  // };
+
+  changeUser = newUser => {
+    const newCurrentUser = { name: newUser };
+    // const local_CurrentUser = Object.assign({}, this.state.currentUser);
+    // local_CurrentUser.name = newUser;
+    this.setState({ currentUser: newCurrentUser });
   };
 
   componentDidMount() {
+    //opening the connection
+    this.socket.onopen = () => {
+      console.log("Connected to server"); //
+    };
+
+    this.socket.onmessage = event => {
+      let data = JSON.parse(event.data);
+      this.setState({ messages: [...this.state.messages, data] });
+
+      // this.socket.send(this.state.messages);
+      console.log("blaaah", event.data);
+    };
+
     console.log("componentDidMount <App />");
     setTimeout(() => {
       console.log("Simulating incoming message");
@@ -68,6 +85,7 @@ class App extends Component {
         <ChatBar
           currentUser={this.state.currentUser}
           addMessage={this.addMessage}
+          changeUser={this.changeUser}
         />
       </div>
     );
