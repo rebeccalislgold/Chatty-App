@@ -81,7 +81,10 @@ class App extends Component {
             Chatty
           </a>
         </nav>
-        <MessageList messages={this.state.messages} />
+        <MessageList
+          messages={this.state.messages}
+          // currentUser={this.state.currentUser}
+        />
         <ChatBar
           currentUser={this.state.currentUser}
           addMessage={this.addMessage}

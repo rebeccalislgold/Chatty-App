@@ -1,6 +1,16 @@
 import React, { Component } from "react";
 import { Message } from "./Message.jsx";
 
+class Notification extends Component {
+  render() {
+    return (
+      <div className="message system">
+        Anonymous1 changed their name to nomnom.
+      </div>
+    );
+  }
+}
+
 class MessageList extends Component {
   render() {
     const messages = this.props.messages.map(messageObj => (
@@ -10,7 +20,12 @@ class MessageList extends Component {
         content={messageObj.content}
       />
     ));
-    return <div>{messages}</div>;
+    return (
+      <main className="messages">
+        <div>{messages}</div>
+        <Notification />
+      </main>
+    );
   }
 }
 
