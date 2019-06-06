@@ -28,18 +28,14 @@ export class ChatBar extends Component {
     console.log(this.state);
   };
 
-  handleChange = event => {
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
+  //   handleChangeUser = event => {
+  //     this.props.changeUser(event.target.value);
+  //   };
 
-    this.setState({
-      [name]: value
-    });
-  };
-
-  handleChangeUser = event => {
-    this.props.changeUser(event.target.value);
+  handleKeyDownUser = event => {
+    if (event.key === "Enter") {
+      this.props.changeUser(event.target.value);
+    }
   };
 
   render() {
@@ -50,7 +46,8 @@ export class ChatBar extends Component {
           name="username"
           placeholder="Your Name (Optional)"
           //   defaultValue={this.props.currentUser.name}
-          onChange={this.handleChangeUser}
+          //   onChange={this.handleChangeUser}
+          onKeyDown={this.handleKeyDownUser}
         />
         <input
           className="chatbar-message"

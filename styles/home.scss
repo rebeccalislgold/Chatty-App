@@ -77,6 +77,9 @@ body {
   position: fixed;
   right: 0;
   top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .navbar-brand {
@@ -89,4 +92,11 @@ body {
   line-height: 60px;
   padding: 0 10px;
   text-decoration: none;
+}
+
+.notification-content {
+  display: flex;
+  padding: 15px;
+  margin: 5px;
+  font-style: italic;
 }

@@ -18,7 +18,20 @@ const server = express()
 // Create the WebSockets server
 const wss = new SocketServer({ server });
 
-// wss.on("connection", ws => {
+// //NOT SURE -- FROM DOM'S NOTES
+// const getColor = () => "#233555";
+
+// const connectClient = (client, nbClients) => {
+//   const clientInfo = {
+//     id: uuidv4(),
+//     username: `Anonymous${nbClients}`,
+//     color: getColor(),
+//     type: "clientInfo"
+//   };
+
+//   client.send(JSON.stringify(clientInfo));
+// };
+
 wss.broadcast = function broadcast(message) {
   wss.clients.forEach(function each(client) {
     client.send(message);
@@ -26,21 +39,36 @@ wss.broadcast = function broadcast(message) {
 };
 
 wss.on("connection", function connection(ws) {
-  console.log("Client connected");
+  console.log("Client connected - ", wss.clients.size, "total users");
+
+  let numberOfUsers = {
+    type: "numberOfUsers",
+    users: wss.clients.size
+  };
+
+  wss.broadcast(JSON.stringify(numberOfUsers));
 
   ws.on("message", function incoming(message) {
     const messageObject = JSON.parse(message);
     messageObject.id = uuidv4();
-    if (messageObject.type === "outgoingMessage") {
-      messageObject.type = "incomingMessage";
-    }
     const username = messageObject.username;
     const content = messageObject.content;
+    // const activeUsers = wss.clients.size;
+
+    if (messageObject.type === "outgoingMessage") {
+      messageObject.type = "incomingMessage";
+    } else if (messageObject.type === "outgoingNotification") {
+      messageObject.type = "incomingNotification";
+    }
 
     console.log("User", username, "said", content, "id", messageObject.id);
     wss.broadcast(JSON.stringify(messageObject));
   });
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
-  ws.on("close", () => console.log("Client disconnected"));
+  ws.on("close", () => {
+    numberOfUsers.users = wss.clients.size;
+    wss.broadcast(JSON.stringify(numberOfUsers));
+    console.log("Client disconnected");
+  });
 });

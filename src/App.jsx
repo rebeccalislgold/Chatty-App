@@ -14,7 +14,8 @@ class App extends Component {
     // add 'message' and 'current user' to state -- how?
     this.state = {
       currentUser: { name: "Bob" }, // optional. if currentUser is not defined, it means the user is Anonymous
-      messages: []
+      messages: [],
+      activeUsers: 0
     };
   }
 
@@ -32,14 +33,23 @@ class App extends Component {
     // this.setState({ messages: newMessages });
   };
 
-  // changeUser = newUser => {
-  //   this.setState({ currentUser: { name: newUser } });
-  // };
-
   changeUser = newUser => {
     const newCurrentUser = { name: newUser };
     // const local_CurrentUser = Object.assign({}, this.state.currentUser);
     // local_CurrentUser.name = newUser;
+
+    const userObject = {
+      // oldusername: this.state.currentUser.name,
+      // newUsername: newUser,
+      username: newUser,
+      content: `${
+        this.state.currentUser.name
+      } changed their name to ${newUser}`,
+      type: "outgoingNotification"
+    };
+
+    this.socket.send(JSON.stringify(userObject));
+
     this.setState({ currentUser: newCurrentUser });
   };
 
@@ -47,30 +57,40 @@ class App extends Component {
     //opening the connection
     this.socket.onopen = () => {
       console.log("Connected to server"); //
+      // this.setState({
+      //   activeUsers: [...this.state.activeUsers, JSON.parse(event.data)]
+      // });
     };
 
     this.socket.onmessage = event => {
       let data = JSON.parse(event.data);
-      this.setState({ messages: [...this.state.messages, data] });
+      console.log("THIS IS DATA TYPE:", data.type);
+
+      if (data.type === "numberOfUsers") {
+        this.setState({ activeUsers: data.users });
+      } else {
+        this.setState({ messages: [...this.state.messages, data] });
+      }
 
       // this.socket.send(this.state.messages);
-      console.log("blaaah", event.data);
+      // console.log("NOTIFICATION!!:", this.state.notifications);
     };
 
     console.log("componentDidMount <App />");
-    setTimeout(() => {
-      console.log("Simulating incoming message");
-      // Add a new message to the list of messages in the data store
-      const newMessage = {
-        id: 3,
-        username: "Michelle",
-        content: "Hello there!"
-      };
-      const messages = this.state.messages.concat(newMessage);
-      // Update the state of the app component.
-      // Calling setState will trigger a call to render() in App and all child components.
-      this.setState({ messages: messages });
-    }, 3000);
+    // setTimeout(() => {
+    //   console.log("Simulating incoming message");
+    //   // Add a new message to the list of messages in the data store
+    //   const newMessage = {
+    //     id: 3,
+    //     username: "Michelle",
+    //     content: "Hello there!"
+    //   };
+
+    //   const messages = this.state.messages.concat(newMessage);
+    //   // Update the state of the app component.
+    //   // Calling setState will trigger a call to render() in App and all child components.
+    //   this.setState({ messages: messages });
+    // }, 3000);
   }
 
   render() {
@@ -80,10 +100,13 @@ class App extends Component {
           <a href="/" className="navbar-brand">
             Chatty
           </a>
+          <div className="user-count">
+            {this.state.activeUsers} user(s) online
+          </div>
         </nav>
         <MessageList
           messages={this.state.messages}
-          // currentUser={this.state.currentUser}
+          notifications={this.state.notifications}
         />
         <ChatBar
           currentUser={this.state.currentUser}
