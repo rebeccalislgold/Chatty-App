@@ -13,7 +13,7 @@ class App extends Component {
 
     // add 'message' and 'current user' to state -- how?
     this.state = {
-      currentUser: { name: "Bob" }, // optional. if currentUser is not defined, it means the user is Anonymous
+      currentUser: { name: "Anonymous", userColor: "black" },
       messages: [],
       activeUsers: 0
     };
@@ -23,6 +23,7 @@ class App extends Component {
     const messageObject = {
       // id: uuidv1(),
       username: this.state.currentUser.name,
+      color: this.state.currentUser.userColor,
       content: newMessage,
       type: "outgoingMessage"
     };
@@ -34,7 +35,8 @@ class App extends Component {
   };
 
   changeUser = newUser => {
-    const newCurrentUser = { name: newUser };
+    // const newCurrentUser = { name: newUser };
+    const userColor = this.state.currentUser.userColor;
     // const local_CurrentUser = Object.assign({}, this.state.currentUser);
     // local_CurrentUser.name = newUser;
 
@@ -50,7 +52,9 @@ class App extends Component {
 
     this.socket.send(JSON.stringify(userObject));
 
-    this.setState({ currentUser: newCurrentUser });
+    this.setState({
+      currentUser: { name: newUser, userColor: userColor }
+    });
   };
 
   componentDidMount() {
@@ -68,6 +72,12 @@ class App extends Component {
 
       if (data.type === "numberOfUsers") {
         this.setState({ activeUsers: data.users });
+      } else if (data.type === "clientInfo") {
+        // this.setState({ currentUser: data.color }); //UPDATE THIS
+        // this.setState({ currentUser: { name: data.username } });
+        this.setState({
+          currentUser: { name: data.username, userColor: data.color }
+        });
       } else {
         this.setState({ messages: [...this.state.messages, data] });
       }
@@ -106,10 +116,11 @@ class App extends Component {
         </nav>
         <MessageList
           messages={this.state.messages}
+          color={this.state.currentUser.userColor}
           notifications={this.state.notifications}
         />
         <ChatBar
-          currentUser={this.state.currentUser}
+          // currentUser={this.state.currentUser}
           addMessage={this.addMessage}
           changeUser={this.changeUser}
         />

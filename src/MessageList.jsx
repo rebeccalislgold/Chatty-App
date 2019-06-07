@@ -10,13 +10,10 @@ class MessageList extends Component {
           key={messageObj.id}
           username={messageObj.username}
           content={messageObj.content}
+          color={messageObj.color}
         />
       ) : (
-        <Notification
-          key={messageObj.id}
-          //   username={messageObj.username}
-          content={messageObj.content}
-        />
+        <Notification key={messageObj.id} content={messageObj.content} />
       )
     );
 

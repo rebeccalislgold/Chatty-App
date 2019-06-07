@@ -18,19 +18,22 @@ const server = express()
 // Create the WebSockets server
 const wss = new SocketServer({ server });
 
-// //NOT SURE -- FROM DOM'S NOTES
-// const getColor = () => "#233555";
+const getColor = () => {
+  const colorCode = uuidv4().slice(0, 6);
+  const hashtag = "#";
+  return hashtag.concat(colorCode);
+};
 
-// const connectClient = (client, nbClients) => {
-//   const clientInfo = {
-//     id: uuidv4(),
-//     username: `Anonymous${nbClients}`,
-//     color: getColor(),
-//     type: "clientInfo"
-//   };
+const connectClient = (client, nbClients) => {
+  const clientInfo = {
+    id: uuidv4(),
+    username: `Anonymous${nbClients}`,
+    color: getColor(),
+    type: "clientInfo"
+  };
 
-//   client.send(JSON.stringify(clientInfo));
-// };
+  client.send(JSON.stringify(clientInfo));
+};
 
 wss.broadcast = function broadcast(message) {
   wss.clients.forEach(function each(client) {
@@ -39,7 +42,7 @@ wss.broadcast = function broadcast(message) {
 };
 
 wss.on("connection", function connection(ws) {
-  console.log("Client connected - ", wss.clients.size, "total users");
+  console.log("Client connected");
 
   let numberOfUsers = {
     type: "numberOfUsers",
@@ -48,11 +51,15 @@ wss.on("connection", function connection(ws) {
 
   wss.broadcast(JSON.stringify(numberOfUsers));
 
+  connectClient(ws, wss.clients.size);
+
   ws.on("message", function incoming(message) {
     const messageObject = JSON.parse(message);
     messageObject.id = uuidv4();
     const username = messageObject.username;
     const content = messageObject.content;
+    const color = messageObject.color;
+
     // const activeUsers = wss.clients.size;
 
     if (messageObject.type === "outgoingMessage") {
