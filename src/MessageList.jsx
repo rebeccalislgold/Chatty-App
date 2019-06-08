@@ -18,7 +18,6 @@ class MessageList extends Component {
     );
 
     return (
-      // if ({messageObj.type} === 'incomingMessage') {
       <main className="messages">
         <div>{messages}</div>
       </main>

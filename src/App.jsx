@@ -1,17 +1,13 @@
 import React, { Component } from "react";
 import MessageList from "./MessageList.jsx";
 import { ChatBar } from "./ChatBar.jsx";
+import { NavBar } from "./navBar.jsx";
 import uuidv1 from "uuid/v1";
 
 class App extends Component {
-  // Set initial state so the component is initially "loading"
   constructor(props) {
     super(props);
-    // this is the *only* time you should assign directly to state:
-
     this.socket = new WebSocket("ws://localhost:3001");
-
-    // add 'message' and 'current user' to state -- how?
     this.state = {
       currentUser: { name: "Anonymous", userColor: "black" },
       messages: [],
@@ -19,9 +15,9 @@ class App extends Component {
     };
   }
 
+  // Method to pass down to ChatBat child component to add message to app messages
   addMessage = newMessage => {
     const messageObject = {
-      // id: uuidv1(),
       username: this.state.currentUser.name,
       color: this.state.currentUser.userColor,
       content: newMessage,
@@ -31,6 +27,7 @@ class App extends Component {
     this.socket.send(JSON.stringify(messageObject));
   };
 
+  // Method to pass down to ChatBat child component to change currentUser name
   changeUser = newUser => {
     const userColor = this.state.currentUser.userColor;
     const userObject = {
@@ -48,19 +45,16 @@ class App extends Component {
     });
   };
 
+  // Invoke immediately after component is mounted
   componentDidMount() {
     //opening the connection
     this.socket.onopen = () => {
-      console.log("Connected to server"); //
-      // this.setState({
-      //   activeUsers: [...this.state.activeUsers, JSON.parse(event.data)]
-      // });
+      console.log("Connected to server");
     };
 
+    // When data is received from back-end, update app state based on data type
     this.socket.onmessage = event => {
       let data = JSON.parse(event.data);
-      console.log("THIS IS DATA TYPE:", data.type);
-
       if (data.type === "numberOfUsers") {
         this.setState({ activeUsers: data.users });
       } else if (data.type === "clientInfo") {
@@ -70,49 +64,22 @@ class App extends Component {
       } else {
         this.setState({ messages: [...this.state.messages, data] });
       }
-
-      // this.socket.send(this.state.messages);
-      // console.log("NOTIFICATION!!:", this.state.notifications);
     };
 
-    console.log("componentDidMount <App />");
-    // setTimeout(() => {
-    //   console.log("Simulating incoming message");
-    //   // Add a new message to the list of messages in the data store
-    //   const newMessage = {
-    //     id: 3,
-    //     username: "Michelle",
-    //     content: "Hello there!"
-    //   };
-
-    //   const messages = this.state.messages.concat(newMessage);
-    //   // Update the state of the app component.
-    //   // Calling setState will trigger a call to render() in App and all child components.
-    //   this.setState({ messages: messages });
-    // }, 3000);
+    // console.log("componentDidMount <App />");
   }
 
+  // Render React components
   render() {
     return (
       <div className="container">
-        <nav className="navbar">
-          <a href="/" className="navbar-brand">
-            Chatty
-          </a>
-          <div className="user-count">
-            {this.state.activeUsers} user(s) online
-          </div>
-        </nav>
+        <NavBar activeUsers={this.state.activeUsers} />
         <MessageList
           messages={this.state.messages}
           color={this.state.currentUser.userColor}
           notifications={this.state.notifications}
         />
-        <ChatBar
-          // currentUser={this.state.currentUser}
-          addMessage={this.addMessage}
-          changeUser={this.changeUser}
-        />
+        <ChatBar addMessage={this.addMessage} changeUser={this.changeUser} />
       </div>
     );
   }
