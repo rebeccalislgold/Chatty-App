@@ -2,7 +2,9 @@
 
 =====================
 
-ChattyApp allows users to communicate with each other in real-time. It is built using React as well as modern Node tools including Webpack and Babel.
+ChattyApp allows users to communicate with each other in real-time. Users may enter their name which is then displayed next to their message posts, or go by "Anonymous". Each user is assigned a random colour when connected. The user's name in each message post is then displayed in their associated colour.
+
+ChattyApp is built using React as well as modern Node tools including Webpack and Babel.
 
 ## Final Product
 
