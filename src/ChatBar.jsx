@@ -24,13 +24,7 @@ export class ChatBar extends Component {
     this.setState({
       [name]: value
     });
-
-    console.log(this.state);
   };
-
-  //   handleChangeUser = event => {
-  //     this.props.changeUser(event.target.value);
-  //   };
 
   handleKeyDownUser = event => {
     if (event.key === "Enter") {
@@ -45,8 +39,6 @@ export class ChatBar extends Component {
           className="chatbar-username"
           name="username"
           placeholder="Your Name (Optional)"
-          //   defaultValue={this.props.currentUser.name}
-          //   onChange={this.handleChangeUser}
           onKeyDown={this.handleKeyDownUser}
         />
         <input

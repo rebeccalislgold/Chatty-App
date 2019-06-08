@@ -65,11 +65,9 @@ class App extends Component {
         this.setState({ messages: [...this.state.messages, data] });
       }
     };
-
-    // console.log("componentDidMount <App />");
   }
 
-  // Render React components
+  // Render content from child components
   render() {
     return (
       <div className="container">
