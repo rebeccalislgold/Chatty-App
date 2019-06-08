@@ -29,24 +29,15 @@ class App extends Component {
     };
 
     this.socket.send(JSON.stringify(messageObject));
-    // const oldMessages = this.state.messages;
-    // const newMessages = [...oldMessages, messageObject];
-    // this.setState({ messages: newMessages });
   };
 
   changeUser = newUser => {
-    // const newCurrentUser = { name: newUser };
     const userColor = this.state.currentUser.userColor;
-    // const local_CurrentUser = Object.assign({}, this.state.currentUser);
-    // local_CurrentUser.name = newUser;
-
     const userObject = {
-      // oldusername: this.state.currentUser.name,
-      // newUsername: newUser,
       username: newUser,
       content: `${
         this.state.currentUser.name
-      } changed their name to ${newUser}`,
+      } changed their name to ${newUser}.`,
       type: "outgoingNotification"
     };
 
@@ -73,8 +64,6 @@ class App extends Component {
       if (data.type === "numberOfUsers") {
         this.setState({ activeUsers: data.users });
       } else if (data.type === "clientInfo") {
-        // this.setState({ currentUser: data.color }); //UPDATE THIS
-        // this.setState({ currentUser: { name: data.username } });
         this.setState({
           currentUser: { name: data.username, userColor: data.color }
         });

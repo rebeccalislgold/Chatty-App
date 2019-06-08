@@ -19,9 +19,9 @@ const server = express()
 const wss = new SocketServer({ server });
 
 const getColor = () => {
-  const colorCode = uuidv4().slice(0, 6);
-  const hashtag = "#";
-  return hashtag.concat(colorCode);
+  const colorCode = `#${uuidv4().slice(0, 6)}`;
+  //   const hashtag = "#";
+  return colorCode;
 };
 
 const connectClient = (client, nbClients) => {
